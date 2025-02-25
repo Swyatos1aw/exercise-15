@@ -1,0 +1,34 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+
+fixed_df = pd.read_csv(
+    "C:/test/velo.csv",  
+    sep=',',
+    encoding='latin1',
+    parse_dates=['Date'], 
+    dayfirst=True,  
+    index_col='Date')
+
+print(fixed_df.head(365))
+
+fixed_df.plot()
+plt.title('Місячні дані велосипедних поїздок')
+plt.show()
+# Перевірка типу індексу,що це DatetimeIndex
+if not isinstance(fixed_df.index, pd.DatetimeIndex):
+    fixed_df.index = pd.to_datetime(fixed_df.index)
+
+# Сумуємо значення по місяцям
+monthly_data = fixed_df.resample('ME').sum()
+
+# Знаходимо місяць з максимальною сумою значень
+most_popular_month = monthly_data.sum(axis=1).idxmax()
+most_popular_month_value = monthly_data.sum(axis=1).max()
+
+# Отримуємо назву місяця
+month_name = most_popular_month.strftime("%B")
+
+# Виводимо результат
+print("\nРезультат:")
+print(f"🚴Найбільш популярний місяць: {month_name} з кількістью поїздок: {most_popular_month_value}")
